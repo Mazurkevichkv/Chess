@@ -1,0 +1,79 @@
+<!doctype html>
+<body>
+<script>
+
+function Horse(start, finish, walls) {
+	
+  var SIZE = 5;
+
+  var board =[];
+  var status=[];
+  var father=[];
+  var queue = [];
+  var start=[start[0]+2,start[1]+2];
+
+  for (var i = 0; i < SIZE + 4; i++) {
+  	board[i]=[];
+  	status[i]=[];
+  	father[i]=[];
+    for (var j = 0; j < SIZE + 4; j++) {
+      if ( i == 0 || i== 1 || i==SIZE + 2 || i==SIZE + 3  || j == 0 || j==1 || j==SIZE + 2 || j==SIZE + 3 ) 
+      	board[i][j]=-1;
+      else 
+      	board[i][j]=walls[j-2][i-2];
+    }
+  };
+
+  queue.push(start);
+
+  while (queue.length != 0 && board[finish[0]+2][finish[1]+2]==0) {
+
+    var curr = queue.shift();
+    
+    var i = curr[0];
+    var j = curr[1];
+    status[i][j]='done';
+
+    var neighbors = [[i - 1, j - 2], [i - 2, j - 1], [i - 2, j + 1], [i - 1, j + 2], [i + 1, j + 2], [i + 2, j + 1], [i + 2, j - 1], [i + 1, j - 2]];
+     //console.log(neighbors);
+     //console.log(curr);
+    for (var k = 0; k < neighbors.length; k++) {
+      var neighbor = neighbors[k];
+      var iNr=neighbor[0];
+      var jNr=neighbor[1];
+      //console.log(iNr+" "+jNr);
+      if ( (status[iNr][jNr]!='done') &&  board[iNr][jNr]!=-1) {
+      	
+      	if (status[iNr][jNr]!='wave'){
+      		queue.push(neighbor);
+      		status[iNr][jNr]='wave';
+      	};
+        board[iNr][jNr] = board[i][j] + 1;
+        father[iNr][jNr]=[i,j];
+      };
+    };
+  };
+  var road=[];
+function path(fPath)
+{
+    road.unshift(fPath);
+	if(fPath)
+	{   
+		return path(father[fPath[0]][fPath[1]])
+	};
+	return start;
+}
+path([finish[0]+2 , finish[1]+2]);
+console.log(road);
+}
+var walls=
+[
+  [0,0,0,0,0],
+  [0,0,0,-1,0],
+  [-1,0,0,0,-1],
+  [0,0,0,0,0],
+  [-1,0,0,0,0]
+];
+Horse([0,0], [2, 3], walls)
+</script>
+
