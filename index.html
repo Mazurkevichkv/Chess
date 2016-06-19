@@ -2,53 +2,52 @@
 <body>
 <script>
 
-function Horse(start, finish, walls) {
+function Horse(walls) {
 	
   var SIZE = 1000;
-
+  //debugger;
   var board =[];
   var status=[];
   var father=[];
 
   var queue = [];
-  var start=[start[0],start[1]];
+  var start, finish;
 
   for (var i = 0; i < SIZE ; i++) {
   	board[i]=[];
   	status[i]=[];
   	father[i]=[];
     for (var j = 0; j < SIZE ; j++) {
-      	board[i][j]=0//walls[j][i];
+    	if (walls[j][i]=='s') {start=[i,j];}
+    	if (walls[j][i]=='f') {finish=[i,j];} 
+    	if ( start&&finish ){ break; }	
     }
   };
 
   queue.push(start);
 
-  while (queue.length != 0 && board[finish[0]][finish[1]]==0) {
+  while (queue.length && !board[finish[0]][finish[1]]) {
 
     var curr = queue.shift();
     var i = curr[0];
     var j = curr[1];
-    status[i][j]=2;
+    status[i][j]=1;
 
     var neighbors = [[i - 1, j - 2], [i - 2, j - 1], [i - 2, j + 1], [i - 1, j + 2], [i + 1, j + 2], [i + 2, j + 1], [i + 2, j - 1], [i + 1, j - 2]];
 
     for (var k = 0; k < neighbors.length; k++) {
-      var neighbor = neighbors[k];
-      var iNr=neighbor[0];
-      var jNr=neighbor[1];
- 
-      if (  iNr >= 0 && iNr<SIZE && jNr >= 0 && jNr<SIZE && status[iNr][jNr]!=2 &&  board[iNr][jNr]!=-1 ) {
-      	
-      	if (status[iNr][jNr]!=1){
-      		queue.push(neighbor);
-      		status[iNr][jNr]=1;
-      	};
+    
+      var iNr=neighbors[k][0];
+      var jNr=neighbors[k][1];
+      if (  iNr >= 0 && iNr<SIZE && jNr >= 0 && jNr<SIZE && status[iNr][jNr]!==1 &&  walls[iNr][jNr]!==-1 ) {
+      	queue.push(neighbors[k]);
+      	status[iNr][jNr]=1;
         board[iNr][jNr] = board[i][j] + 1;
-        father[iNr][jNr]=[i,j];
+        father[iNr][jNr] = [i,j];
       };
     };
   };
+
   var road=[];
   function path(fPath)
 	{
@@ -59,25 +58,28 @@ function Horse(start, finish, walls) {
 		};
 		return start;
 	}
-	path([finish[0] , finish[1]]);
-	road.shift();
-	console.log(board[finish[0] ][finish[1]]);
+	  
+	  path([finish[0] , finish[1]]);
+	  road.shift();
+      
+	console.log(road);
 
 	}
-   
+ var walls=[];
 
-var walls=
-[
-  [0,0,0,0,0],
-  [0,0,0,-1,0],
-  [-1,0,0,0,-1],
-  [0,0,0,0,0],
-  [-1,0,0,0,0]
-];
+for (var i = 0; i < 1000 ; i++) {
+  	walls[i]=[];
+    for (var j = 0; j < 1000; j++) {
+    	walls[i][j]=0;
+    }
+  };
+  walls[0][0]='s'; walls[999][999]='f';
+
+
 
 console.time('test');
 
-Horse([0,0], [999, 999], walls);
+Horse(walls);
 
 console.timeEnd('test');
 </script>
